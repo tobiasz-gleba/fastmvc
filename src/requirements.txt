@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+elastic-apm
+ecs-logging
+alembic
+sqlmodel
+fastapi-users[sqlalchemy]
+aiosqlite
