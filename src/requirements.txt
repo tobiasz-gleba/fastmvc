@@ -4,5 +4,4 @@ elastic-apm
 ecs-logging
 alembic
 sqlmodel
-fastapi-users[sqlalchemy]
-aiosqlite
+fastapi-jwt-auth[asymmetric]

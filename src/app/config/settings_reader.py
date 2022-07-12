@@ -18,14 +18,14 @@ class ServerSettings(BaseModel):
     SERVER_LOG_LEVEL: str = "INFO"
 
     class Config:
-        env_file = "config.env"
+        env_file = "config/config.env"
 
 class DatabaseSettings(BaseModel):
     DB_CONNECTION_STRING: str = 'http://elasticsearch:9200'
     DB_ENGINE: str = 'ELASTICSEARCH'
 
     class Config:
-        env_file = "config.env"
+        env_file = "config/config.env"
 
 class ElasticAPMSettings(BaseModel):
     APM_ENABLED: bool = True
@@ -33,7 +33,7 @@ class ElasticAPMSettings(BaseModel):
     APM_TOKEN: str = 'TOKEN1939'
 
     class Config:
-        env_file = "config.env"
+        env_file = "config/config.env"
 
 
 class CacheSettings(BaseModel):
@@ -44,7 +44,14 @@ class CacheSettings(BaseModel):
     CACHE_PASSWORD: str = "test"
     
     class Config:
-        env_file = "config.env"
+        env_file = "config/config.env"
+
+
+class AuthSettings(BaseModel):
+    AUTH_ENABLED: bool = True
+ 
+    class Config:
+        env_file = "config/config.env"
 
 
 @lru_cache()

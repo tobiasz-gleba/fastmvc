@@ -1,26 +1,52 @@
-from fastapi import Depends, APIRouter, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from .model import fake_users_db, UserInDB, fake_hash_password, get_current_active_user
+from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi_jwt_auth import AuthJWT
 from .schema import User
-
 app = APIRouter()
 
-@app.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user_dict = fake_users_db.get(form_data.username)
+@app.post('/login')
+def login(user: User, Authorize: AuthJWT = Depends()):
+    if user.username != "test" or user.password != "test":
+        raise HTTPException(status_code=401,detail="Bad username or password")
 
-    if not user_dict:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    # Create the tokens and passing to set_access_cookies or set_refresh_cookies
+    access_token = Authorize.create_access_token(subject=user.username)
+    refresh_token = Authorize.create_refresh_token(subject=user.username)
 
-    user = UserInDB(**user_dict)
-    hashed_password = fake_hash_password(form_data.password)
+    # Set the JWT cookies in the response
+    Authorize.set_access_cookies(access_token)
+    Authorize.set_refresh_cookies(refresh_token)
+    return {"msg":"Successfully login"}
 
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+@app.post('/refresh')
+def refresh(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_refresh_token_required()
 
-    return {"access_token": user.username, "token_type": "bearer"}
+    current_user = Authorize.get_jwt_subject()
+    new_access_token = Authorize.create_access_token(subject=current_user)
+    # Set the JWT cookies in the response
+    Authorize.set_access_cookies(new_access_token)
+    return {"msg":"The token has been refresh"}
 
+@app.delete('/logout')
+def logout(Authorize: AuthJWT = Depends()):
+    """
+    Because the JWT are stored in an httponly cookie now, we cannot
+    log the user out by simply deleting the cookies in the frontend.
+    We need the backend to send us a response to delete the cookies.
+    """
+    Authorize.jwt_required()
 
-@app.get("/users/me")
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+    Authorize.unset_jwt_cookies()
+    return {"msg":"Successfully logout"}
+
+@app.get('/protected')
+def protected(Authorize: AuthJWT = Depends()):
+    """
+    We do not need to make any changes to our protected endpoints. They
+    will all still function the exact same as they do when sending the
+    JWT in via a headers instead of a cookies
+    """
+    Authorize.jwt_required()
+
+    current_user = Authorize.get_jwt_subject()
+    return {"user": current_user}
