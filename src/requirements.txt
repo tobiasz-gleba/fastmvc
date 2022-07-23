@@ -5,3 +5,4 @@ ecs-logging
 alembic
 sqlmodel
 fastapi-jwt-auth[asymmetric]
+psycopg2-binary 

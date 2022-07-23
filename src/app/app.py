@@ -20,3 +20,4 @@ server = uvicorn.Server(server_config)
 # fastapi start async loop
 if __name__ == "__main__":
     asyncio.run(server.serve())
+

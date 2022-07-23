@@ -1,26 +1,45 @@
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
-from sqlmodel.ext.asyncio.session import AsyncSession
-from config import config
+from typing import Optional
 
-db_connection_str = config.db_async_connection_str
-Base: DeclarativeMeta = declarative_base()
+import projects.users.schema
 
-async_engine = create_async_engine(
-    db_connection_str,
-    echo=True,
-    future=True
-)
-
-async def get_async_session() -> AsyncSession:
-    async_session = sessionmaker(
-        bind=async_engine, class_=AsyncSession, expire_on_commit=False
-    )
-    async with async_session() as session:
-        yield session
+from sqlmodel import SQLModel, create_engine, Session, select
 
 
-async def create_db_and_tables():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+sqlite_url = f"postgresql://postgres:postgres@postgres:5432/database"
+
+engine = create_engine(sqlite_url, echo=True)
+
+SQLModel.metadata.create_all(engine)
+
+
+class Query():
+
+    def __init__(self, statement):
+        self.statement = statement
+        with Session(engine) as session:
+            result = session.exec(statement)
+        self.result
+    def result(self):
+        return self.result
+
+class Command():
+    
+    def _add(self, sqlmodel_object):
+        with Session(engine) as session:
+            session.add(sqlmodel_object)
+            session.commit()
+            session.refresh(sqlmodel_object)
+        return sqlmodel_object
+
+    def insert(self, sqlmodel_object):
+        return self._add(sqlmodel_object)
+
+    def update(self, sqlmodel_object):
+        return self._add(sqlmodel_object)
+
+    def delete(self, sqlmodel_object):
+        with Session(engine) as session:
+            session.delete(sqlmodel_object)
+            session.commit()
+            session.refresh(sqlmodel_object)
+        return sqlmodel_object

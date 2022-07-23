@@ -33,7 +33,7 @@ def md5_dir(directory):
 old_md5_hash = ""
 while True:
     sleep(0.3)
-    md5_hash =  md5_dir("src")
+    md5_hash =  md5_dir(".")
     if old_md5_hash != md5_hash:
         # print(old_md5_hash)
         print("\n\n\n\n !new verson! \n\n\n\n")

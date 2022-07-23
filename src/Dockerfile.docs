@@ -1,0 +1,5 @@
+FROM squidfunk/mkdocs-material
+
+RUN pip install swagger-markdown 
+
+COPY docs /docs

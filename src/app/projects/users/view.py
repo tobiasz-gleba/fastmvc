@@ -1,10 +1,14 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
 from .schema import User
+from .dependency import get_current_user
+from core.db import Command, Query, select, engine, Session
+
 app = APIRouter()
 
 @app.post('/login')
 def login(user: User, Authorize: AuthJWT = Depends()):
+    Authorize.unset_jwt_cookies()
     if user.username != "test" or user.password != "test":
         raise HTTPException(status_code=401,detail="Bad username or password")
 
@@ -39,14 +43,19 @@ def logout(Authorize: AuthJWT = Depends()):
     Authorize.unset_jwt_cookies()
     return {"msg":"Successfully logout"}
 
+
+@app.post('/register')
+def refresh(user: User):
+    user = Command().insert(user)
+    return user
+
+
 @app.get('/protected')
-def protected(Authorize: AuthJWT = Depends()):
+def protected(user: User = Depends(get_current_user)):
     """
     We do not need to make any changes to our protected endpoints. They
     will all still function the exact same as they do when sending the
     JWT in via a headers instead of a cookies
-    """
-    Authorize.jwt_required()
-
-    current_user = Authorize.get_jwt_subject()
-    return {"user": current_user}
+    """    
+    query = Query(select(User).where(User.username == user.username)).result()
+    return str(query)

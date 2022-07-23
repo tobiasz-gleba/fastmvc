@@ -14,7 +14,7 @@ services:
     ports:
       - 9200:9200
     healthcheck:
-      interval: 20s
+      interval: 10s
       retries: 10
       test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
     deploy:
@@ -22,21 +22,6 @@ services:
         limits:
           cpus: '1'
           memory: 900M
-
-  redis:
-    container_name: redis
-    hostname: redis
-    image: redis
-
-  redis-commander:
-    container_name: redis-commander
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-    - REDIS_HOSTS=local:redis:6379
-    ports:
-    - "8081:8081"
 
   kibana:
     container_name: kb-container
@@ -70,46 +55,44 @@ services:
       - 8200:8200
 
   defaultmq:
-    # depends_on:
-    #   - defaultmq-tests
-    #   - defaultmq-db
     build:
       context: src
       target: release
     container_name: defaultmq
     restart: unless-stopped
+    depends_on:
+      - postgres
     ports:
       - "7000:80"
     environment:
       SERVER_DEVELOPMENT: "True"
       LOG_LEVEL: debug
 
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=database
+    ports:
+      - "5432:5432"
+    volumes: 
+      - db:/var/lib/postgresql/data
 
-    # volumes: 
-    #   - ./src/app/logs:/app/logs
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '1'
-    #       memory: 500M
-    # logging:
-    #   options:
-    #     max-size: "512m"
-
-  # defaultmq-tests:
-  #   build:
-  #     context: src
-  #     target: test
-  #   container_name: defaultmq-tests
-  # rabbitmq:
-  #   container_name: rabbitmq
-  #   image: rabbitmq:3.8-management-alpine
-  #   environment:
-  #     - RABBITMQ_DEFAULT_USER=user
-  #     - RABBITMQ_DEFAULT_PASS=password
-  #   ports:
-  #     - '15672:15672'
-  
+      
+  docs:
+      build:
+          context: src
+          dockerfile: Dockerfile.docs
+      container_name: docs
+      restart: always
+      ports:
+          - '7100:8000'
+      logging:
+          options:
+              max-size: "512m"
 
 volumes:
-  defaultmq-db-volume:
+  db:

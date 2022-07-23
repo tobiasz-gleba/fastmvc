@@ -1,0 +1,41 @@
+site_name: VAM
+
+theme:
+  language: en
+  favicon: docs/assets/images/logo.png
+  # icon:
+  #   logo: logo.png
+  name: material
+  # custom_dir: overrides
+  features:
+    - search.highlight
+    - navigation.instant
+    - navigation.tabs
+  palette:
+    - scheme: slate
+      primary: '#376DF8'
+      accent: blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+# markdown_extensions:
+  # - swaggermarkdown:
+  #     file: swagger.json
+  #     definitionsUrlRoot: '/types'
+
+  # - pymdownx.emoji:
+  #     emoji_index: !!python/name:materialx.emoji.twemoji
+  #     emoji_generator: !!python/name:materialx.emoji.to_svg
+
+
+  
+
+plugins:
+  - search
+
+# extra_css:
+#   - assets/images/main.css
+
+# extra_javascript:
+#   - assets/images/code.js
