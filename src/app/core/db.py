@@ -16,11 +16,15 @@ class Query():
 
     def __init__(self, statement):
         self.statement = statement
+
+    async def result(self):
+        result_list = []
         with Session(engine) as session:
-            result = session.exec(statement)
-        self.result
-    def result(self):
-        return self.result
+            query_result = session.exec(self.statement)
+            for result in query_result:
+                result_list.append(result)
+
+        return result_list
 
 class Command():
     
@@ -31,13 +35,13 @@ class Command():
             session.refresh(sqlmodel_object)
         return sqlmodel_object
 
-    def insert(self, sqlmodel_object):
+    async def insert(self, sqlmodel_object):
         return self._add(sqlmodel_object)
 
-    def update(self, sqlmodel_object):
+    async def update(self, sqlmodel_object):
         return self._add(sqlmodel_object)
 
-    def delete(self, sqlmodel_object):
+    async def delete(self, sqlmodel_object):
         with Session(engine) as session:
             session.delete(sqlmodel_object)
             session.commit()

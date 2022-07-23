@@ -7,7 +7,7 @@ from core.db import Command, Query, select, engine, Session
 app = APIRouter()
 
 @app.post('/login')
-def login(user: User, Authorize: AuthJWT = Depends()):
+async def login(user: User, Authorize: AuthJWT = Depends()):
     Authorize.unset_jwt_cookies()
     if user.username != "test" or user.password != "test":
         raise HTTPException(status_code=401,detail="Bad username or password")
@@ -22,7 +22,7 @@ def login(user: User, Authorize: AuthJWT = Depends()):
     return {"msg":"Successfully login"}
 
 @app.post('/refresh')
-def refresh(Authorize: AuthJWT = Depends()):
+async def refresh(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
 
     current_user = Authorize.get_jwt_subject()
@@ -32,7 +32,7 @@ def refresh(Authorize: AuthJWT = Depends()):
     return {"msg":"The token has been refresh"}
 
 @app.delete('/logout')
-def logout(Authorize: AuthJWT = Depends()):
+async def logout(Authorize: AuthJWT = Depends()):
     """
     Because the JWT are stored in an httponly cookie now, we cannot
     log the user out by simply deleting the cookies in the frontend.
@@ -45,17 +45,18 @@ def logout(Authorize: AuthJWT = Depends()):
 
 
 @app.post('/register')
-def refresh(user: User):
-    user = Command().insert(user)
+async def refresh(user: User):
+    user = await Command().insert(user)
     return user
 
 
 @app.get('/protected')
-def protected(user: User = Depends(get_current_user)):
+async def protected(user: User = Depends(get_current_user)):
     """
     We do not need to make any changes to our protected endpoints. They
     will all still function the exact same as they do when sending the
     JWT in via a headers instead of a cookies
     """    
-    query = Query(select(User).where(User.username == user.username)).result()
-    return str(query)
+    query = Query(select(User).where(User.username == "test"))
+    result = await query.result()
+    return result[0]
