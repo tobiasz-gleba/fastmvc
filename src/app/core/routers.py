@@ -1,7 +1,7 @@
-from projects.users.view import app as users
+from projects.auth.view import app as auth
 from utils.observability import app as healtcheck
 
 routers = (
     (healtcheck, "healtcheck", ["healtcheck"]),
-    (users, "auth", ["auth"]),
+    (auth, "auth", ["auth"]),
 )

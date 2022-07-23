@@ -3,7 +3,7 @@ from fastapi_jwt_auth import AuthJWT
 from .schema import User
 from .dependency import get_current_user
 from core.db import Command, Query, select
-from .utils import get_hashed_password, verify_password
+from utils.base import get_hashed_password, verify_password
 
 app = APIRouter()
 
