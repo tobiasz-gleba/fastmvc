@@ -1,9 +1,17 @@
 from .schema import User
 from fastapi import Depends
 from fastapi_jwt_auth import AuthJWT
+from core.db import Query, select
+from fastapi import HTTPException
 
-def get_current_user(Authorize: AuthJWT = Depends()):
+async def get_current_user(Authorize: AuthJWT = Depends()):
     Authorize.jwt_required()
     current_user = Authorize.get_jwt_subject()
-    user = User(username=current_user, password="test")
-    return user
+    user_from_db = Query(select(User).where(User.username == current_user).limit(1)).get_result()
+    if user_from_db == []:
+        Authorize.unset_jwt_cookies()
+        raise HTTPException(404)
+    user = user_from_db[0]
+    user.password = None
+    user.id = None
+    return user_from_db[0]

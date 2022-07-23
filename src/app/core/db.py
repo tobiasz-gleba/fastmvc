@@ -1,9 +1,5 @@
-from typing import Optional
-
-import projects.users.schema
-
+import projects
 from sqlmodel import SQLModel, create_engine, Session, select
-
 
 sqlite_url = f"postgresql://postgres:postgres@postgres:5432/database"
 
@@ -16,15 +12,21 @@ class Query():
 
     def __init__(self, statement):
         self.statement = statement
-
-    async def result(self):
+    
+    def _select(self):
         result_list = []
         with Session(engine) as session:
             query_result = session.exec(self.statement)
             for result in query_result:
                 result_list.append(result)
-
         return result_list
+
+    async def get_async_result(self) -> list:
+        return self._select()
+
+    def get_result(self) -> list:
+        return self._select()
+
 
 class Command():
     

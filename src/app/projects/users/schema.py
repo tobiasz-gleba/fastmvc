@@ -7,7 +7,6 @@ class User(SQLModel, table=True):
     username: str
     password: str
 
-    
 # https://github.com/tiangolo/sqlmodel/issues/140
 # from sqlmodel import SQLModel
 # from sqlmodel import Field, SQLModel
