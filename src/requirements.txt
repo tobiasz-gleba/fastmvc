@@ -7,3 +7,4 @@ sqlmodel
 fastapi-jwt-auth[asymmetric]
 psycopg2-binary 
 passlib
+email-validator
