@@ -54,12 +54,15 @@ services:
     ports:
       - 8200:8200
 
-  defaultmq:
+  webapp:
     build:
       context: src
-      target: release
-    container_name: defaultmq
+      # target: release
+      dockerfile: Dockerfile.dev
+    container_name: webapp
     restart: unless-stopped
+    # volumes:
+    #   - "./src/app/migrations/versions:/app/migrations/versions"
     depends_on:
       - postgres
     ports:

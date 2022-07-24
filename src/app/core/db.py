@@ -49,3 +49,4 @@ class Command():
             session.commit()
             session.refresh(sqlmodel_object)
         return sqlmodel_object
+        

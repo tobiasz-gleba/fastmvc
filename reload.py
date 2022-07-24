@@ -37,8 +37,9 @@ while True:
     if old_md5_hash != md5_hash:
         # print(old_md5_hash)
         print("\n\n\n\n !new verson! \n\n\n\n")
-        os.system("docker-compose up -d --build --remove-orphans && docker-compose up -d --build --no-deps defaultmq && docker logs defaultmq")
+        os.system("docker-compose up -d --build --remove-orphans && docker-compose up -d --build --no-deps webapp && docker logs webapp")
+        os.system("docker-compose exec webapp alembic -c /app/albemic.ini stamp head")
+        os.system("docker-compose exec webapp alembic -c /app/albemic.ini revision --purge --autogenerate -m 'dev'")
+        os.system("docker-compose exec webapp alembic -c /app/albemic.ini upgrade head")
+        os.system("docker-compose exec webapp alembic -c /app/albemic.ini stamp head")
         old_md5_hash = md5_hash
-
-
-

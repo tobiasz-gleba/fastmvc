@@ -12,7 +12,7 @@ class ServerSettings(BaseModel):
     SERVER_EXPOSE_PORT: int = 80
     SERVER_HOST: str = '0.0.0.0'
     SERVER_DEVELOPMENT: bool = False
-    SERVER_WORKERS: int = 5
+    SERVER_WORKERS: int = 1
     SERVER_TIMEOUT: int = 10
 
     SERVER_LOG_LEVEL: str = "INFO"

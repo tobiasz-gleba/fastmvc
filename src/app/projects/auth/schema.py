@@ -4,3 +4,4 @@ from pydantic import EmailStr
 class User(AppObject, table=True):
     email: EmailStr
     password: str
+    active: bool

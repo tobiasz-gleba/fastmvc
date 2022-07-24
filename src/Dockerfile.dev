@@ -1,0 +1,13 @@
+ARG PYTHON_V=3.10.2
+
+FROM python:${PYTHON_V}-slim AS base
+ENV PATH="/app/.local/bin:${PATH}"
+WORKDIR /app
+COPY --chown=app:app requirements.txt requirements.txt
+RUN pip install --upgrade \
+    pip \
+    setuptools
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+COPY app .
+CMD ["python3", "app.py", "-W", "ignore::DeprecationWarning"]

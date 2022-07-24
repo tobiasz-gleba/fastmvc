@@ -3,6 +3,8 @@ import uvicorn
 from config import config
 from core.core import app_core
 
+print(config.server.SERVER_WORKERS)
+
 # server startup conf
 server_config = uvicorn.Config(
     app=app_core,
@@ -20,4 +22,3 @@ server = uvicorn.Server(server_config)
 # fastapi start async loop
 if __name__ == "__main__":
     asyncio.run(server.serve())
-
